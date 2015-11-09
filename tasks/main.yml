@@ -1,0 +1,28 @@
+---
+
+- name: check if dropbox is installed
+  shell: dpkg-query -l dropbox
+  register: dropbox_installed
+  failed_when: dropbox_installed.rc > 1
+
+- name: download dropbox package
+  get_url:
+    url: https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_{{ version }}_amd64.deb
+    dest: "{{ pkg_path }}"
+  register: dropbox_package
+
+- name: install dropbox
+  apt:
+    deb: "{{ pkg_path }}"
+    state: present
+  become: yes
+  become_user: root
+  when: dropbox_installed.stdout.find('no packages found') != -1 or dropbox_package.changed
+
+- name: install dependencies when running on kde
+  apt:
+    name: libappindicator3-1
+    state: present
+  become: yes
+  become_user: root
+  when: ansible_env.KDE_FULL_SESSION == "true"

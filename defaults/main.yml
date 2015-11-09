@@ -1,0 +1,4 @@
+---
+
+version: 2015.02.12
+pkg_path: "{{ lookup('env','HOME') }}/Downloads/ansible/dropbox-amd64.deb"
